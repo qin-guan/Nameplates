@@ -1,0 +1,13 @@
+﻿services:
+  nameplates.webapp:
+    image: nameplates.webapp
+    build:
+      context: .
+      dockerfile: Nameplates.WebApp/Nameplates.WebApp/Dockerfile
+
+  nameplates.webapp.client:
+    image: nameplates.webapp.client
+    build:
+      context: .
+      dockerfile: Nameplates.WebApp/Nameplates.WebApp.Client/Dockerfile
+
