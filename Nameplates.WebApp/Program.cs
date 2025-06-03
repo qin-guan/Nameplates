@@ -63,10 +63,11 @@ app.MapGet("download.pptx", (
         p.Font.FontName = "Times New Roman";
         p.Font.FontSize = 44;
         p.HorizontalAlignment = HorizontalAlignmentType.Center;
+        topTxt.Rotation = 180;
 
-        if (!inversed)
+        if (inversed)
         {
-            topTxt.Rotation = 180;
+            topTxt.Rotation = 0;
         }
 
         var bottomTxt = slide.AddTextBox(0, heightInPts / 2, widthInPts, heightInPts / 2);
