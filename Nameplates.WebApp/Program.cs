@@ -16,7 +16,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSyncfusionBlazor();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((doc, _, _) =>
+    {
+        doc.Servers.Clear();
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
