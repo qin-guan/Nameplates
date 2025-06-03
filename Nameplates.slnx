@@ -2,6 +2,6 @@
   <Folder Name="/Solution Items/">
     <File Path="compose.yaml" />
   </Folder>
-  <Project Path="Nameplates.WebApp\Nameplates.WebApp.Client\Nameplates.WebApp.Client.csproj" Type="Classic C#" />
-  <Project Path="Nameplates.WebApp\Nameplates.WebApp\Nameplates.WebApp.csproj" Type="Classic C#" />
+  <Project Path="Nameplates.WebApp.Client\Nameplates.WebApp.Client.csproj" Type="Classic C#" />
+  <Project Path="Nameplates.WebApp\Nameplates.WebApp.csproj" Type="Classic C#" />
 </Solution>
