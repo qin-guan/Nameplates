@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Nameplates.WebApp.Components;
 using Scalar.AspNetCore;
-using Syncfusion.Blazor;
 using Syncfusion.Presentation;
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
@@ -15,7 +15,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddSyncfusionBlazor();
+builder.Services.AddFluentUIComponents(options =>
+{
+    options.ValidateClassNames = false;
+});
+
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((doc, _, _) =>

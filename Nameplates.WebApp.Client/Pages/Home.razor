@@ -1,0 +1,89 @@
+﻿@page "/"
+@using System.Text.Json
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Primitives
+@rendermode InteractiveAuto
+
+<PageTitle>Nameplate Generator</PageTitle>
+
+<FluentGrid Style="flex: 1; margin: 0;">
+    
+    <FluentGridItem xs="12" sm="4">
+        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
+            <FluentTextArea
+                Style="width: 100%"
+                Value="@Name"
+                @oninput="args => Name = args.Value.ToString()"
+                @onkeydown="OnKeyDown"
+                Placeholder="Add new item..."/>
+
+            <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                <small>
+                    <kbd>
+                        ctrl
+                    </kbd>
+                    +
+                    <kbd>
+                        enter
+                    </kbd>
+                    to add
+                </small>
+
+                <FluentButton OnClick="OnAdd">Add</FluentButton>
+            </FluentStack>
+
+            <div style="flex: 1;">
+                <FluentDataGrid Items="@NamesQueryable" MultiLine="true">
+                    <PropertyColumn Property="@(p => p.Item2)" Title="Nameplates"/>
+                    <TemplateColumn Title="Remove">
+                        <FluentButton Appearance="Appearance.Lightweight" OnClick="() => { Names.RemoveAt(context.Item1); }">Remove</FluentButton>
+                    </TemplateColumn>
+                </FluentDataGrid>
+            </div>
+
+        </FluentStack>
+    </FluentGridItem>
+
+    <FluentGridItem xs="12" sm="8" Style="display: flex">
+        <iframe src="@GeneratedUri" style="flex: 1;"></iframe>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+
+    public List<string> Names = [];
+    public IQueryable<(int, string)> NamesQueryable => Names.Select((name, idx) => (idx, name)).AsQueryable();
+    public string Name { get; set; } = "";
+
+    public string GeneratedUri
+    {
+        get
+        {
+            var kvs = new List<KeyValuePair<string, StringValues>>();
+            kvs.Add(new KeyValuePair<string, StringValues>("name", Names.ToArray()));
+            var url = QueryHelpers.AddQueryString("https://nameplates.from.sg/download.pptx", kvs);
+            return QueryHelpers.AddQueryString(
+                "https://view.officeapps.live.com/op/embed.aspx",
+                new List<KeyValuePair<string, StringValues>>
+                {
+                    new("amp;wdAr", "1.3722222222222222"),
+                    new("amp;wdEaa", "1"),
+                    new("src", url)
+                }
+            );
+        }
+    }
+
+    void OnAdd()
+    {
+        Names.Add(Name);
+        Name = "";
+    }
+
+    void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args is not { Key: "Enter", CtrlKey: true }) return;
+        OnAdd();
+    }
+
+}

@@ -9,8 +9,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.4.5" />
-        <PackageReference Include="Syncfusion.Presentation.Net.Core" Version="29.2.7"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.4.8" />
+        <PackageReference Include="Syncfusion.Presentation.Net.Core" Version="29.2.8" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.5"/>
     </ItemGroup>
     

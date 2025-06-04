@@ -1,9 +1,20 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@inherits LayoutComponentBase
 
-<div>
-    <main>
-        <article>
+<FluentToastProvider/>
+<FluentDialogProvider/>
+<FluentTooltipProvider/>
+<FluentMessageBarProvider/>
+<FluentMenuProvider/>
+
+<FluentLayout>
+    <FluentHeader>
+        Nameplate Generator
+    </FluentHeader>
+
+    <FluentStack Orientation="Orientation.Horizontal" Style="flex: 1;">
+        <FluentBodyContent Style="display: flex; align-items: unset">
             @Body
-        </article>
-    </main>
-</div>
+        </FluentBodyContent>
+    </FluentStack>
+</FluentLayout>
