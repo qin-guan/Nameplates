@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.FluentUI.AspNetCore.Components;
+using Radzen;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.AddFluentUIComponents(options =>
-{
-    options.ValidateClassNames = false;
-});
+builder.Services.AddRadzenComponents();
 
 await builder.Build().RunAsync();

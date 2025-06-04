@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.FluentUI.AspNetCore.Components;
 using Nameplates.WebApp.Components;
+using Radzen;
 using Scalar.AspNetCore;
 using Syncfusion.Presentation;
 
@@ -15,10 +15,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddFluentUIComponents(options =>
-{
-    options.ValidateClassNames = false;
-});
+builder.Services.AddRadzenComponents();
 
 builder.Services.AddOpenApi(options =>
 {

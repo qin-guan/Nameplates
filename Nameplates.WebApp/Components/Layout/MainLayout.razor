@@ -1,20 +1,15 @@
-﻿@using Microsoft.FluentUI.AspNetCore.Components
+﻿@using Radzen
+@using Radzen.Blazor
 @inherits LayoutComponentBase
 
-<FluentToastProvider/>
-<FluentDialogProvider/>
-<FluentTooltipProvider/>
-<FluentMessageBarProvider/>
-<FluentMenuProvider/>
-
-<FluentLayout>
-    <FluentHeader>
-        Nameplate Generator
-    </FluentHeader>
-
-    <FluentStack Orientation="Orientation.Horizontal" Style="flex: 1;">
-        <FluentBodyContent Style="display: flex; align-items: unset">
-            @Body
-        </FluentBodyContent>
-    </FluentStack>
-</FluentLayout>
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="16">
+            <div style="height: 50px;"></div>
+            <RadzenLabel Text="Nameplate Generator"/>
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+</RadzenLayout>

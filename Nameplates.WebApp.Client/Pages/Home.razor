@@ -1,66 +1,84 @@
 ﻿@page "/"
-@using System.Text.Json
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Primitives
+@inject IJSRuntime JsRuntime
 @rendermode InteractiveAuto
 
 <PageTitle>Nameplate Generator</PageTitle>
 
-<FluentGrid Style="flex: 1; margin: 0;">
-    
-    <FluentGridItem xs="12" sm="4">
-        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Stretch">
-            <FluentTextArea
-                Style="width: 100%"
-                Value="@Name"
-                @oninput="args => Name = args.Value.ToString()"
-                @onkeydown="OnKeyDown"
-                Placeholder="Add new item..."/>
-
-            <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-                <small>
-                    <kbd>
-                        ctrl
-                    </kbd>
-                    +
-                    <kbd>
-                        enter
-                    </kbd>
-                    to add
-                </small>
-
-                <FluentButton OnClick="OnAdd">Add</FluentButton>
-            </FluentStack>
-
-            <div style="flex: 1;">
-                <FluentDataGrid Items="@NamesQueryable" MultiLine="true">
-                    <PropertyColumn Property="@(p => p.Item2)" Title="Nameplates"/>
-                    <TemplateColumn Title="Remove">
-                        <FluentButton Appearance="Appearance.Lightweight" OnClick="() => { Names.RemoveAt(context.Item1); }">Remove</FluentButton>
-                    </TemplateColumn>
-                </FluentDataGrid>
-            </div>
-
-        </FluentStack>
-    </FluentGridItem>
-
-    <FluentGridItem xs="12" sm="8" Style="display: flex">
+<RadzenRow Gap="0.5rem" RowGap="0.5rem" Style="height: 100%">
+    <RadzenColumn Size="12" SizeMD="8" Style="display: flex;">
         <iframe src="@GeneratedUri" style="flex: 1;"></iframe>
-    </FluentGridItem>
-</FluentGrid>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" SizeMD="4" Style="display: flex; flex-direction: column;">
+        <RadzenTextArea
+            Style="width: 100%;"
+            Value="@Name"
+            @onkeydown="OnKeyDown"
+            @oninput="args => Name = args.Value?.ToString() ?? string.Empty"
+            Placeholder="Type name here (example: MAJ JOHN)"
+        >
+        </RadzenTextArea>
+
+        <div style="display: flex; align-items: center; justify-content: space-between;" class="rz-my-2">
+            <RadzenButton Disabled="string.IsNullOrWhiteSpace(Name)" @onclick="OnAdd" Size="ButtonSize.Small">Add</RadzenButton>
+            
+            <small>
+                <kbd>ctrl</kbd>
+                +
+                <kbd>enter</kbd>
+                to add
+            </small>
+        </div>
+
+        <div style="flex: 1; position: relative">
+            <RadzenDataGrid
+                @ref="_grid"
+                RowRender="@RowRender"
+                Style="position: absolute; inset: 0;"
+                Data="@Names"
+            >
+                <Columns>
+                    <RadzenDataGridColumn Property="@nameof(Record.Name)" Title="Name">
+                        <Template Context="context">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>
+                                    @context.Name
+                                </span>
+                                <RadzenIcon Icon="drag_handle"></RadzenIcon>
+                            </div>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    </RadzenColumn>
+</RadzenRow>
+
+<style>
+    .my-class td {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+</style>
 
 @code {
 
-    public List<string> Names = [];
-    public IQueryable<(int, string)> NamesQueryable => Names.Select((name, idx) => (idx, name)).AsQueryable();
-    public string Name { get; set; } = "";
+    record Record(string Name);
 
-    public string GeneratedUri
+    RadzenDataGrid<Record>? _grid;
+    Record? _draggedItem;
+
+    string Name { get; set; } = "";
+    List<Record> Names { get; set; } = [];
+
+    string GeneratedUri
     {
         get
         {
             var kvs = new List<KeyValuePair<string, StringValues>>();
-            kvs.Add(new KeyValuePair<string, StringValues>("name", Names.ToArray()));
+            kvs.Add(new KeyValuePair<string, StringValues>("name", Names.Select(n => n.Name).ToArray()));
             var url = QueryHelpers.AddQueryString("https://nameplates.from.sg/download.pptx", kvs);
             return QueryHelpers.AddQueryString(
                 "https://view.officeapps.live.com/op/embed.aspx",
@@ -76,8 +94,11 @@
 
     void OnAdd()
     {
-        Names.Add(Name);
+        if (string.IsNullOrWhiteSpace(Name)) return;
+        
+        Names.Add(new Record(Name));
         Name = "";
+        _grid?.Reload();
     }
 
     void OnKeyDown(KeyboardEventArgs args)
@@ -85,5 +106,26 @@
         if (args is not { Key: "Enter", CtrlKey: true }) return;
         OnAdd();
     }
+
+
+    void RowRender(RowRenderEventArgs<Record> args)
+    {
+        args.Attributes.Add("title", "Drag row to reorder");
+        args.Attributes.Add("style", "cursor:grab");
+        args.Attributes.Add("draggable", "true");
+        args.Attributes.Add("ondragover", "event.preventDefault();event.target.closest('.rz-data-row').classList.add('my-class')");
+        args.Attributes.Add("ondragleave", "event.target.closest('.rz-data-row').classList.remove('my-class')");
+        args.Attributes.Add("ondragstart", EventCallback.Factory.Create<DragEventArgs>(this, () => _draggedItem = args.Data));
+        args.Attributes.Add("ondrop", EventCallback.Factory.Create<DragEventArgs>(this, () =>
+        {
+            var droppedIndex = Names.IndexOf(args.Data);
+            Names.Remove(_draggedItem ?? throw new InvalidOperationException());
+            Names.Insert(droppedIndex, _draggedItem);
+
+            JsRuntime.InvokeVoidAsync("eval", $"document.querySelector('.my-class').classList.remove('my-class')");
+            _grid?.Reload();
+        }));
+    }
+
 
 }
