@@ -59,6 +59,9 @@ app.MapGet("download.pptx", (
     {
         var slide = file.Slides.Add(SlideLayoutType.Blank);
         var topTxt = slide.AddTextBox(0, 0, widthInPts, heightInPts / 2);
+        topTxt.LineFormat.Fill.FillType = FillType.Solid;
+        topTxt.LineFormat.Fill.SolidFill.Color = ColorObject.Black;
+        topTxt.LineFormat.Weight = 1;
         topTxt.TextBody.VerticalAlignment = VerticalAlignmentType.Middle;
         var p = topTxt.TextBody.AddParagraph(name);
         p.Font.FontName = "Times New Roman";
@@ -72,6 +75,9 @@ app.MapGet("download.pptx", (
         }
 
         var bottomTxt = slide.AddTextBox(0, heightInPts / 2, widthInPts, heightInPts / 2);
+        bottomTxt.LineFormat.Fill.FillType = FillType.Solid;
+        bottomTxt.LineFormat.Fill.SolidFill.Color = ColorObject.Black;
+        bottomTxt.LineFormat.Weight = 1;
         var pp = bottomTxt.TextBody.AddParagraph(name);
         pp.HorizontalAlignment = HorizontalAlignmentType.Center;
         pp.Font.FontName = "Times New Roman";
@@ -82,10 +88,6 @@ app.MapGet("download.pptx", (
         {
             bottomTxt.Rotation = 180;
         }
-
-        var divider = slide.Shapes.AddShape(AutoShapeType.Line, 0, heightInPts / 2, widthInPts, 0);
-        divider.Fill.FillType = FillType.Solid;
-        divider.Fill.SolidFill.Color = ColorObject.Black;
     }
 
     var stream = new MemoryStream();
